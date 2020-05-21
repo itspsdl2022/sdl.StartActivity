@@ -116,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
                     answer.setText(R.string.answer_receive_default);
                 }
                 break;
+            default:
+                super.onActivityResult(reqCode, resCode, data);
         }
     }
 
