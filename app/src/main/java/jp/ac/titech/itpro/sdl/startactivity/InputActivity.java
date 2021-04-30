@@ -3,7 +3,6 @@ package jp.ac.titech.itpro.sdl.startactivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,20 +25,17 @@ public class InputActivity extends AppCompatActivity {
         final EditText input = findViewById(R.id.input_name);
 
         Button button = findViewById(R.id.input_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick");
-                String name = input.getText().toString().trim();
-                if (!name.isEmpty()) {
-                    Intent data = new Intent();
-                    data.putExtra(NAME_EXTRA, name);
-                    setResult(RESULT_OK, data);
-                } else {
-                    setResult(RESULT_CANCELED);
-                }
-                finish();
+        button.setOnClickListener(v -> {
+            Log.d(TAG, "onClick");
+            String name = input.getText().toString().trim();
+            if (!name.isEmpty()) {
+                Intent data = new Intent();
+                data.putExtra(NAME_EXTRA, name);
+                setResult(RESULT_OK, data);
+            } else {
+                setResult(RESULT_CANCELED);
             }
+            finish();
         });
     }
 

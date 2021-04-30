@@ -2,11 +2,12 @@ package jp.ac.titech.itpro.sdl.startactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -40,61 +41,51 @@ public class MainActivity extends AppCompatActivity {
         final EditText input = findViewById(R.id.main_input);
 
         Button buttonGo1 = findViewById(R.id.main_button_go1);
-        buttonGo1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick - Go 1");
-                String name = input.getText().toString().trim();
-                if (!name.isEmpty()) {
-                    Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
-                    intent.putExtra(AnswerActivity.NAME_EXTRA, name);
-                    startActivity(intent);
-                }
+        buttonGo1.setOnClickListener(v -> {
+            Log.d(TAG, "onClick - Go 1");
+            String name = input.getText().toString().trim();
+            if (!name.isEmpty()) {
+                Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
+                intent.putExtra(AnswerActivity.NAME_EXTRA, name);
+                startActivity(intent);
             }
         });
 
         Button buttonGo2 = findViewById(R.id.main_button_go2);
-        buttonGo2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick - Go 2");
-                Intent intent = new Intent(MainActivity.this, InputActivity.class);
-                startActivityForResult(intent, REQ_NAME_2);
-            }
+        buttonGo2.setOnClickListener(v -> {
+            Log.d(TAG, "onClick - Go 2");
+            Intent intent = new Intent(MainActivity.this, InputActivity.class);
+            startActivityForResult(intent, REQ_NAME_2);
         });
 
         Button buttonGo3 = findViewById(R.id.main_button_go3);
-        buttonGo3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick - Go 3");
-                Intent intent = new Intent(ACTION_INPUT);
-                PackageManager packageManager = getPackageManager();
-                List activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-                if (!activities.isEmpty()) {
-                    startActivityForResult(intent, REQ_NAME_3);
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.toast_no_activities_format, ACTION_INPUT),
-                            Toast.LENGTH_LONG).show();
-                }
+        buttonGo3.setOnClickListener(v -> {
+            Log.d(TAG, "onClick - Go 3");
+            Intent intent = new Intent(ACTION_INPUT);
+            PackageManager packageManager = getPackageManager();
+            @SuppressLint("QueryPermissionsNeeded")
+            List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            if (!activities.isEmpty()) {
+                startActivityForResult(intent, REQ_NAME_3);
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.toast_no_activities_format, ACTION_INPUT),
+                        Toast.LENGTH_LONG).show();
             }
         });
 
         Button buttonGo4 = findViewById(R.id.main_button_go4);
-        buttonGo4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick - Go 4");
-                Intent intent = new Intent();
-                intent.setClassName(TARGET_PACKAGE, TARGET_CLASS);
-                PackageManager packageManager = getPackageManager();
-                List activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-                if (activities.size() > 0) {
-                    startActivityForResult(intent, REQ_NAME_4);
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.toast_no_activities_format, TARGET_CLASS),
-                            Toast.LENGTH_LONG).show();
-                }
+        buttonGo4.setOnClickListener(v -> {
+            Log.d(TAG, "onClick - Go 4");
+            Intent intent = new Intent();
+            intent.setClassName(TARGET_PACKAGE, TARGET_CLASS);
+            PackageManager packageManager = getPackageManager();
+            @SuppressLint("QueryPermissionsNeeded")
+            List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            if (activities.size() > 0) {
+                startActivityForResult(intent, REQ_NAME_4);
+            } else {
+                Toast.makeText(MainActivity.this, getString(R.string.toast_no_activities_format, TARGET_CLASS),
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
