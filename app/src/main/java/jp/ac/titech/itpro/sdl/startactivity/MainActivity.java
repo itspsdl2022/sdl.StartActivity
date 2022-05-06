@@ -1,5 +1,7 @@
 package jp.ac.titech.itpro.sdl.startactivity;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -21,9 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private final static String NAME_EXTRA = "name";
     private final static String TARGET_PACKAGE = "jp.ac.titech.itpro.sdl.startactivitysub";
     private final static String TARGET_CLASS = TARGET_PACKAGE + ".InputActivity";
-    private final static int REQ_NAME_2 = 1234;
-    private final static int REQ_NAME_3 = 1235;
-    private final static int REQ_NAME_4 = 1236;
 
     private TextView answer;
 
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         buttonGo2.setOnClickListener(v -> {
             Log.d(TAG, "onClick - Go 2");
             Intent intent = new Intent(MainActivity.this, InputActivity.class);
-            startActivityForResult(intent, REQ_NAME_2);
+            launcher.launch(intent);
         });
 
         Button buttonGo3 = findViewById(R.id.main_button_go3);
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("QueryPermissionsNeeded")
             List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
             if (!activities.isEmpty()) {
-                startActivityForResult(intent, REQ_NAME_3);
+                launcher.launch(intent);
             } else {
                 Toast.makeText(MainActivity.this, getString(R.string.toast_no_activities_format, ACTION_INPUT),
                         Toast.LENGTH_LONG).show();
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("QueryPermissionsNeeded")
             List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
             if (activities.size() > 0) {
-                startActivityForResult(intent, REQ_NAME_4);
+                launcher.launch(intent);
             } else {
                 Toast.makeText(MainActivity.this, getString(R.string.toast_no_activities_format, TARGET_CLASS),
                         Toast.LENGTH_LONG).show();
@@ -90,27 +89,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int reqCode, int resCode, Intent data) {
-        Log.d(TAG, "onActivityResult");
-        switch (reqCode) {
-            case REQ_NAME_2:
-            case REQ_NAME_3:
-            case REQ_NAME_4:
-                if (resCode == RESULT_OK) {
-                    String name = data.getStringExtra(NAME_EXTRA);
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(new StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() != null) {
+                    String name = result.getData().getStringExtra(NAME_EXTRA);
                     if (name != null && !name.isEmpty()) {
                         answer.setText(getString(R.string.answer_format, name));
                     }
                 }
-                else {
-                    answer.setText(R.string.answer_receive_default);
-                }
-                break;
-            default:
-                super.onActivityResult(reqCode, resCode, data);
-        }
-    }
+            }
+            else {
+                answer.setText(R.string.answer_receive_default);
+            }
+        });
 
     @Override
     protected void onStart() {
